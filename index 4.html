@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Thai WAB</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #08080f; color: #fff; font-family: 'Noto Sans Thai', 'Sarabun', system-ui, sans-serif; min-height: 100vh; padding-bottom: 30px; }
+  
+  /* LAYOUT */
+  .view { display: none; }
+  .view.active { display: block; }
+  .container { max-width: 560px; margin: 0 auto; padding: 14px; }
+  
+  /* CARDS */
+  .card { background: #ffffff06; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  
+  /* BUTTONS */
+  button { cursor: pointer; font-family: inherit; }
+  .btn-primary { background: linear-gradient(135deg,#2d6a4f,#1b4965); border: none; color: #fff; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 700; width: 100%; }
+  .btn-secondary { background: #ffffff0a; border: 1px solid #ffffff15; border-radius: 7px; color: #aaa; font-size: 12px; padding: 7px; flex: 1; }
+  .btn-blue { background: #1b4965; border: none; color: #fff; border-radius: 7px; font-size: 12px; font-weight: 600; padding: 7px; flex: 1; }
+  .btn-minus { background: #cc3333; border: none; color: #fff; border-radius: 8px; font-size: 18px; font-weight: 700; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; }
+  .btn-plus { border: none; color: #fff; border-radius: 8px; font-size: 18px; font-weight: 700; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; }
+  .btn-sm-minus { background: #cc3333; border: none; color: #fff; border-radius: 4px; font-size: 13px; font-weight: 700; width: 24px; height: 24px; min-width: 24px; display: flex; align-items: center; justify-content: center; }
+  .btn-sm-plus { border: none; color: #fff; border-radius: 4px; font-size: 13px; font-weight: 700; width: 24px; height: 24px; min-width: 24px; display: flex; align-items: center; justify-content: center; }
+  
+  /* INPUTS */
+  input[type=text], input[type=number], textarea {
+    width: 100%; padding: 6px 10px; border-radius: 5px;
+    background: #000000a0; border: 1px solid #ffffff20; color: #fff;
+    font-size: 12px; font-family: inherit; resize: vertical;
+  }
+  input[type=range] { width: 100%; height: 6px; }
+  
+  /* CHECKROW */
+  .check-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; background: #ffffff06; border: 1px solid #ffffff12; transition: all 0.15s; }
+  .check-row.checked { background: #74c69d18; border-color: #74c69d; }
+  .check-box { width: 18px; height: 18px; min-width: 18px; margin-top: 2px; border-radius: 3px; border: 2px solid #444; background: transparent; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #000; transition: all 0.15s; }
+  .check-row.checked .check-box { border-color: #74c69d; background: #74c69d; }
+  .check-label { font-size: 13px; color: #aaa; line-height: 1.5; flex: 1; }
+  .check-row.checked .check-label { color: #fff; }
+  
+  /* COUNTER */
+  .counter { display: flex; gap: 10px; align-items: center; }
+  .counter-val { font-size: 22px; font-weight: 700; min-width: 64px; text-align: center; }
+  .counter-max { font-size: 12px; color: #555; }
+  
+  /* STEP ROW */
+  .step-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 4px; border-radius: 6px; background: #ffffff06; border: 1px solid #ffffff12; }
+  .step-label { flex: 1; font-size: 12px; color: #aaa; }
+  .step-max { font-size: 11px; color: #555; min-width: 28px; }
+  .step-val { min-width: 20px; text-align: center; font-size: 13px; font-weight: 700; }
+  
+  /* TABS */
+  .tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 4px 10px; border-radius: 20px; border: 1px solid #ffffff20; background: transparent; color: #666; font-size: 12px; font-weight: 400; white-space: nowrap; flex-shrink: 0; font-family: inherit; }
+  .tab-btn.active { font-weight: 700; }
+  
+  /* FLEX UTILS */
+  .flex { display: flex; }
+  .flex-center { display: flex; align-items: center; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .gap-5 { gap: 5px; }
+  .gap-7 { gap: 7px; }
+  .gap-8 { gap: 8px; }
+  .gap-10 { gap: 10px; }
+  .gap-12 { gap: 12px; }
+  .flex-1 { flex: 1; }
+  .wrap { flex-wrap: wrap; }
+  
+  /* TEXT */
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  .score-total { text-align: right; font-size: 15px; font-weight: 700; padding: 4px 0; }
+  .hint { font-size: 11px; color: #777; margin: 0 0 8px; line-height: 1.5; }
+  .section-title { font-size: 13px; font-weight: 600; }
+  .section-score { font-size: 13px; font-weight: 700; }
+  .label-desc { font-size: 11px; color: #666; }
+  
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  
+  /* PROGRESS BAR */
+  .prog-bg { height: 4px; background: #ffffff08; border-radius: 2px; flex: 1; }
+  .prog-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .prog-bg-thin { height: 3px; background: #ffffff10; border-radius: 2px; flex: 1; }
+  
+  /* SCORE CHIP */
+  .chip { background: #08080f; border-radius: 6px; padding: 3px 7px; }
+  .chip-label { font-size: 9px; color: #555; }
+  .chip-val { font-size: 13px; font-weight: 700; }
+  
+  /* STICKY HEADER */
+  .sticky-header { position: sticky; top: 0; z-index: 100; padding: 10px 14px; }
+  
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { padding: 4px 6px; border-bottom: 1px solid #ffffff15; color: #666; text-align: left; font-weight: 600; white-space: nowrap; }
+  td { padding: 4px 6px; }
+  tr:nth-child(even) { background: #ffffff03; }
+  
+  /* TIMER CIRCLE */
+  .timer-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0; border: 3px solid; }
+  
+  /* SCORE BTNS */
+  .score-btns { display: flex; gap: 3px; }
+  .score-btn { width: 24px; height: 24px; border-radius: 4px; border: none; cursor: pointer; font-size: 11px; font-weight: 700; background: #ffffff15; color: #888; }
+  .score-btn.active { color: #000; }
+  
+  /* MC OPTIONS */
+  .mc-opt { padding: 3px 10px; border-radius: 14px; border: none; cursor: pointer; font-size: 12px; background: #ffffff15; color: #999; font-weight: 400; font-family: inherit; }
+  .mc-opt.selected-correct { color: #000; font-weight: 700; }
+  .mc-opt.selected-wrong { background: #cc3333; color: #fff; font-weight: 700; }
+  
+  /* AQ SEVERITY COLORS */
+  .sev-mild { color: #74c69d; }
+  .sev-moderate { color: #f4a261; }
+  .sev-severe { color: #ff6b35; }
+  .sev-vsevere { color: #cc3333; }
+  
+  /* FORM */
+  .form-field { margin-bottom: 8px; }
+  .form-label { font-size: 11px; color: #666; margin-bottom: 3px; }
+  
+  /* PATIENT CARD */
+  .patient-card { background: #10101e; border: 1px solid #ffffff12; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  
+  /* HISTORY CARD */
+  .history-card { background: #10101e; border: 1px solid #ffffff12; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  
+  /* SLIDER LABEL BOX */
+  .slider-label { background: #ffffff0a; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #bbb; line-height: 1.5; margin-top: 8px; }
+  
+  /* OBJ ITEM */
+  .obj-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 6px; background: #ffffff06; border: 1px solid #ffffff10; }
+  .obj-name { flex: 1; font-size: 12px; color: #aaa; }
+  
+  /* APHASIA TABLE ROW */
+  .aph-row td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+  
+  /* WORD LEVEL CAT */
+  .wl-cat { padding: 8px 10px; margin-bottom: 5px; border-radius: 7px; background: #ffffff06; border: 1px solid #ffffff10; }
+  
+  /* NOTE INPUT */
+  .note-input { border-color: #2d6a4f60 !important; }
+</style>
+</head>
+<body>
+
+<!-- ===================== VIEW: PATIENTS ===================== -->
+<div id="view-patients" class="view active">
+  <div style="background:linear-gradient(135deg,#0d1b2a,#1a0d2e);border-bottom:1px solid #ffffff12;padding:18px">
+    <div class="flex-center gap-12">
+      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#2d6a4f,#1b4965);display:flex;align-items:center;justify-content:center;font-size:22px">🧠</div>
+      <div>
+        <div style="font-size:17px;font-weight:700">Thai WAB</div>
+        <div style="font-size:11px;color:#555">Western Aphasia Battery — Thai Adaptation (1994)</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <button class="btn-primary" style="margin-bottom:14px" onclick="toggleForm()">+ เพิ่มผู้ป่วยใหม่</button>
+    <div id="patient-form" style="display:none;background:#10101e;border:1px solid #2d6a4f60;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;color:#74c69d;font-weight:600;margin-bottom:10px">ข้อมูลผู้ป่วย</div>
+      <div class="form-field"><div class="form-label">ชื่อ-นามสกุล *</div><input type="text" id="f-name"></div>
+      <div class="form-field"><div class="form-label">อายุ</div><input type="text" id="f-age"></div>
+      <div class="form-field"><div class="form-label">วัน/เดือน/ปีเกิด</div><input type="text" id="f-dob"></div>
+      <div class="form-field"><div class="form-label">การวินิจฉัย</div><input type="text" id="f-diagnosis"></div>
+      <div class="flex gap-8" style="margin-top:8px">
+        <button onclick="addPatient()" style="flex:1;padding:8px;background:#2d6a4f;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;font-family:inherit">บันทึก</button>
+        <button onclick="toggleForm()" style="flex:1;padding:8px;background:#333;border:none;border-radius:6px;color:#aaa;font-size:13px;font-family:inherit">ยกเลิก</button>
+      </div>
+    </div>
+    <div id="patient-list"></div>
+  </div>
+</div>
+
+<!-- ===================== VIEW: HISTORY ===================== -->
+<div id="view-history" class="view">
+  <div style="background:#10101e;border-bottom:1px solid #ffffff12;padding:14px 16px" class="flex-center gap-10">
+    <button onclick="showView('patients')" style="background:none;border:none;color:#888;font-size:20px">←</button>
+    <div>
+      <div style="font-size:15px;font-weight:700">ประวัติการทดสอบ</div>
+      <div id="history-name" style="font-size:11px;color:#555"></div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="history-list"></div>
+    <div style="background:#10101e;border:1px solid #ffffff10;border-radius:10px;padding:14px;margin-top:4px">
+      <div style="font-size:13px;color:#888;font-weight:600;margin-bottom:6px">เกณฑ์จัดประเภท Aphasia (Kertesz 1982)</div>
+      <div style="font-size:10px;color:#555;margin-bottom:8px">Fluency ใช้คะแนนพูดเอง /10 | ค่าอื่นๆ /10</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ประเภท</th><th>Fluency</th><th>Comp.</th><th>Rep.</th><th>Nam.</th></tr></thead>
+          <tbody id="aphasia-table-body"></tbody>
+        </table>
+      </div>
+      <div style="font-size:10px;color:#444;margin-top:8px">ระดับความรุนแรง AQ: ≥76=Mild • 51-75=Moderate • 26-50=Severe • 0-25=Very Severe</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== VIEW: ASSESS ===================== -->
+<div id="view-assess" class="view">
+  <div id="assess-header" class="sticky-header">
+    <div class="flex-center gap-10" style="margin-bottom:8px">
+      <button onclick="showView('patients')" style="background:none;border:none;color:#666;font-size:18px">←</button>
+      <div id="assess-patient-info" class="flex-1" style="font-size:11px;color:#555"></div>
+      <div style="text-align:right;margin-right:8px">
+        <div style="font-size:9px;color:#555">AQ</div>
+        <div id="assess-aq" style="font-size:17px;font-weight:700;color:#74c69d">0</div>
+      </div>
+      <button onclick="showView('history')" style="background:#ffffff0a;border:1px solid #ffffff15;border-radius:6px;color:#aaa;font-size:11px;padding:4px 8px;font-family:inherit">ประวัติ</button>
+    </div>
+    <div class="tabs" id="section-tabs"></div>
+  </div>
+  <div class="container">
+    <div id="section-header" class="card flex-between" style="margin-bottom:14px">
+      <div>
+        <div id="sec-title" class="section-title"></div>
+        <div id="sec-id-label" style="font-size:10px;color:#555"></div>
+      </div>
+      <div style="text-align:right">
+        <div id="sec-score" style="font-size:24px;font-weight:700"></div>
+        <div id="sec-max" style="font-size:11px;color:#444"></div>
+      </div>
+    </div>
+    <div id="section-body"></div>
+    <div id="score-summary" style="background:#10101e;border:1px solid #ffffff10;border-radius:10px;padding:14px;margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+window.onerror = function(msg, src, line, col, err) {
+  var box = document.getElementById('err-box');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'err-box';
+    box.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#cc0000;color:#fff;font-size:12px;padding:10px 14px;z-index:9999;white-space:pre-wrap;font-family:monospace;';
+    document.body.appendChild(box);
+  }
+  box.textContent += 'LINE '+line+': '+msg+'\n';
+  return false;
+};
+</script>
+<script>
+// ==================== DATA ====================
+const SK = "thai_wab_v5";
+function loadData() { try { return JSON.parse(localStorage.getItem(SK) || "{}"); } catch(e) { return {}; } }
+function saveData(d) { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} }
+
+let DB = loadData();
+let currentPid = null;
+let currentSess = null;
+let currentSec = "speaking";
+
+// ==================== CONSTANTS ====================
+const SECS = [
+  { id:"speaking",   label:"พูดเอง",       max:20  },
+  { id:"auditory",   label:"การฟัง",       max:200 },
+  { id:"repetition", label:"พูดตาม",       max:100 },
+  { id:"naming",     label:"การเรียกชื่อ", max:100 },
+  { id:"reading",    label:"การอ่าน",      max:100 },
+  { id:"writing",    label:"การเขียน",     max:100 },
+  { id:"apraxia",    label:"Apraxia",      max:60  },
+];
+
+const COLORS = {
+  speaking:   "#74c69d",
+  auditory:   "#5fa8d3",
+  repetition: "#c77dff",
+  naming:     "#f4a261",
+  reading:    "#48cae4",
+  writing:    "#ffd166",
+  apraxia:    "#ef476f",
+};
+
+const BG = {
+  speaking:   "#0d2016",
+  auditory:   "#0d1b2a",
+  repetition: "#1a0d2e",
+  naming:     "#2e1208",
+  reading:    "#0a1a2e",
+  writing:    "#1a1a0a",
+  apraxia:    "#1a0a0a",
+};
+
+const BORDER = {
+  speaking:   "#2d6a4f",
+  auditory:   "#1b4965",
+  repetition: "#6b2d8b",
+  naming:     "#8b3a1a",
+  reading:    "#1a3a5c",
+  writing:    "#5c4a00",
+  apraxia:    "#6b1a1a",
+};
+
+const APHASIA_TABLE = [
+  { t:"Global",               fl:"0-4",  au:"0-3.9", re:"0-4.9", nm:"0-6" },
+  { t:"Broca's",             fl:"0-4",  au:"4-10",  re:"0-7.9", nm:"0-8" },
+  { t:"Isolation",            fl:"0-4",  au:"0-3.9", re:"5-10",  nm:"0-6" },
+  { t:"Transcortical Motor",  fl:"0-4",  au:"4-10",  re:"8-10",  nm:"0-8" },
+  { t:"Wernicke's",          fl:"5-10", au:"0-6.9", re:"0-7.9", nm:"0-9" },
+  { t:"Transcortical Sensory",fl:"5-10", au:"0-6.9", re:"8-10",  nm:"0-9" },
+  { t:"Conduction",           fl:"5-10", au:"7-10",  re:"0-6.9", nm:"0-9" },
+  { t:"Anomic",               fl:"5-10", au:"7-10",  re:"7-10",  nm:"0-9" },
+];
+
+// ==================== SCORE CALC ====================
+function calcAQ(sc) {
+  const s = sc.speaking || 0;
+  const a = (sc.auditory || 0) / 20;
+  const r = (sc.repetition || 0) / 10;
+  const n = (sc.naming || 0) / 10;
+  return Math.round(((s + a + r + n) * 2) * 10) / 10;
+}
+
+function aqSeverity(aq) {
+  if (aq >= 76) return { label:"Mild (เล็กน้อย)",        cls:"sev-mild"     };
+  if (aq >= 51) return { label:"Moderate (ปานกลาง)",     cls:"sev-moderate" };
+  if (aq >= 26) return { label:"Severe (รุนแรง)",        cls:"sev-severe"   };
+  return              { label:"Very Severe (รุนแรงมาก)", cls:"sev-vsevere"  };
+}
+
+function classifyAphasia(sc) {
+  const fl = (sc.speaking || 0) > 8;
+  const a  = (sc.auditory || 0) / 20;
+  const r  = (sc.repetition || 0) / 10;
+  const n  = (sc.naming || 0) / 10;
+  if (!fl && a <= 3.9 && r <= 4.9 && n <= 6)  return "Global";
+  if (!fl && a >= 4   && r <= 7.9 && n <= 8)  return "Broca's";
+  if (!fl && a <= 3.9 && r >= 5   && n <= 6)  return "Isolation";
+  if (!fl && a >= 4   && r >= 8   && n <= 8)  return "Transcortical Motor";
+  if ( fl && a <= 6.9 && r <= 7.9 && n <= 9)  return "Wernicke's";
+  if ( fl && a <= 6.9 && r >= 8   && n <= 9)  return "Transcortical Sensory";
+  if ( fl && a >= 7   && r <= 6.9 && n <= 9)  return "Conduction";
+  if ( fl && a >= 7   && r >= 7   && n <= 9)  return "Anomic";
+  return "Unclassified (Atypical)";
+}
+
+const OBJS = ["ปืน","ลูกบอล","มีด","ถ้วย","เข็มกลัด","ค้อน","แปรงสีฟัน","ยางลบ","กุญแจ","ดินสอ","ไขควง","ลูกกุญแจ","แก้วน้ำ","บุหรี่","หวี","ร่ม","ช้อน","พัดลม","ส้อม","ไม้ขีดไฟ"];
+
+function getScores(session) {
+  if (!session) return { speaking:0, auditory:0, repetition:0, naming:0, reading:0, writing:0, apraxia:0, aq:0 };
+  const ans = session.answers || {};
+
+  const sp = ans.speaking || {};
+  const speaking = (sp.info || 0) + (sp.fluency || 0);
+
+  const au = ans.auditory || {};
+  const ynScore = Object.values(au.yesno || {}).filter(Boolean).length * 3;
+  const wl = (au.wl_obj||0)+(au.wl_pic||0)+(au.wl_shp||0)+(au.wl_let||0)+(au.wl_num||0)+(au.wl_col||0);
+  let cmd23 = 0;
+  [1,2,3,4,5,6,7,8,9,10,11].forEach(function(id){ cmd23 += (au.cmds && au.cmds[id]) || 0; });
+  const auditory = ynScore + wl + cmd23;
+
+  const re = ans.repetition || {};
+  let repetition = 0;
+  [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].forEach(function(id){ repetition += (re.reps && re.reps[id]) || 0; });
+
+  const na = ans.naming || {};
+  let obj41 = 0;
+  OBJS.forEach(function(o){ obj41 += (na.objScores && na.objScores[o]) || 0; });
+  const cnt42 = Math.min(na.animalCount || 0, 20);
+  const sc43 = Object.values(na.comp43 || {}).filter(Boolean).length * 2;
+  const sc44 = Object.values(na.resp44 || {}).filter(Boolean).length * 2;
+  const naming = obj41 + cnt42 + sc43 + sc44;
+
+  const rd = ans.reading || {};
+  const MC51 = [{id:1,ans:"เปียก",sc:2},{id:2,ans:"ปืน",sc:2},{id:3,ans:"ช่างเครื่องยนต์",sc:4},{id:4,ans:"สอนหนังสือ",sc:4},{id:5,ans:"โลหะ",sc:6},{id:6,ans:"ผัก",sc:6},{id:7,ans:"แก๊สธรรมชาติ",sc:8},{id:8,ans:"ได้รับการดูแล",sc:8}];
+  let sc51 = 0;
+  MC51.forEach(function(it){ if (rd.mc51 && rd.mc51[it.id] === it.ans) sc51 += it.sc; });
+  let sc52 = 0;
+  [1,2,3,4,5,6].forEach(function(id){ sc52 += (rd.cmds52 && rd.cmds52[id]) || 0; });
+  const sc57 = ["กา","ยืม","หน้า","กล้วย","กระดุน","ดูกเต่า"].filter(function(_,i){ return rd.s57 && rd.s57[i]; }).length;
+  const sc58 = ["นา","เมา","บ้าน","ดินสอ","กระดาน","น้ำตาเทียน"].filter(function(_,i){ return rd.s58 && rd.s58[i]; }).length;
+  const reading = sc51+sc52+(rd.s53||0)+(rd.s54||0)+(rd.s55||0)+(rd.s56||0)+sc57+sc58+(rd.s59||0);
+
+  const wr = ans.writing || {};
+  const writing = (wr.s61||0)+(wr.s62||0)+(wr.s63||0)+(wr.s64||0)+(wr.s65a||0)+(wr.s65b||0)+(wr.s66a||0)+(wr.s66b||0);
+
+  const ap = ans.apraxia || {};
+  const apraxia = Object.values(ap.sc || {}).reduce(function(s,v){ return s+(v||0); }, 0);
+
+  const aq = calcAQ({ speaking:speaking, auditory:auditory, repetition:repetition, naming:naming });
+  return { speaking:speaking, auditory:auditory, repetition:repetition, naming:naming, reading:reading, writing:writing, apraxia:apraxia, aq:aq };
+}
+
+// ==================== HELPERS ====================
+function getAns() { return (currentSess && currentSess.answers && currentSess.answers[currentSec]) || {}; }
+function setAns(v) {
+  if (!currentSess) return;
+  currentSess.answers = currentSess.answers || {};
+  currentSess.answers[currentSec] = v;
+  saveSession();
+  refreshSection();
+  refreshSummary();
+  document.getElementById("assess-aq").textContent = getScores(currentSess).aq;
+}
+
+function saveSession() {
+  if (!currentPid || !currentSess) return;
+  const p = DB[currentPid];
+  if (!p) return;
+  p.sessions = (p.sessions || []).filter(function(x){ return x.id !== currentSess.id; });
+  p.sessions.push(currentSess);
+  p.sessions.sort(function(a,b){ return a.date - b.date; });
+  saveData(DB);
+}
+
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs || {})) {
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el[k] = v;
+    else el.setAttribute(k, v);
+  }
+  children.forEach(function(c){
+    if (c === null || c === undefined) return;
+    if (typeof c === "string" || typeof c === "number") el.appendChild(document.createTextNode(c));
+    else el.appendChild(c);
+  });
+  return el;
+}
+
+function makeCounter(value, max, color, onChange) {
+  const val = value || 0;
+  const wrap = h("div", {"class":"counter"});
+  const minus = h("button", {"class":"btn-minus", "onclick": function(){ onChange(Math.max(0,val-1)); }}, "-");
+  const valEl = h("span", {"class":"counter-val", "style":"color:"+color}, val, h("span",{"class":"counter-max"}," /"+max));
+  const plus = h("button", {"class":"btn-plus", "style":"background:"+color, "onclick": function(){ onChange(Math.min(max,val+1)); }}, "+");
+  wrap.appendChild(minus); wrap.appendChild(valEl); wrap.appendChild(plus);
+  return wrap;
+}
+
+function makeStepRow(label, value, max, color, onChange) {
+  const val = value || 0;
+  const row = h("div", {"class":"step-row", "style": val>0 ? "background:"+color+"10;border-color:"+color+"50" : ""});
+  row.appendChild(h("span", {"class":"step-label","style":val>0?"color:#fff":""}, label));
+  row.appendChild(h("span", {"class":"step-max"}, "/"+max));
+  row.appendChild(h("button",{"class":"btn-sm-minus","onclick":function(){ onChange(Math.max(0,val-1)); }},"-"));
+  row.appendChild(h("span",{"class":"step-val","style":"color:"+color}, val));
+  row.appendChild(h("button",{"class":"btn-sm-plus","style":"background:"+color,"onclick":function(){ onChange(Math.min(max,val+1)); }},"+"));
+  return row;
+}
+
+function makeCheckRow(checked, accent, label, answer, onClick) {
+  const row = h("div", {"class":"check-row"+(checked?" checked":""), "onclick":onClick});
+  const box = h("div", {"class":"check-box"}, checked?"v":"");
+  if (checked) { box.style.borderColor=accent; box.style.background=accent; row.style.background=accent+"18"; row.style.borderColor=accent; }
+  const lbl = h("div", {"class":"check-label"});
+  lbl.innerHTML = label + (answer ? " <span style=\"font-size:11px;color:"+accent+";font-weight:600\"> → "+answer+"</span>" : "");
+  row.appendChild(box); row.appendChild(lbl);
+  return row;
+}
+
+function makeCard(borderColor, children) {
+  const card = h("div", {"class":"card", "style":"border:1px solid "+borderColor+"40"});
+  children.forEach(function(c){ if(c) card.appendChild(c); });
+  return card;
+}
+
+function makeCardTitle(color, label, score) {
+  const row = h("div",{"class":"flex-between","style":"margin-bottom:6px"});
+  row.appendChild(h("span",{"class":"section-title","style":"color:"+color}, label));
+  row.appendChild(h("span",{"class":"section-score","style":"color:"+color}, score));
+  return row;
+}
+
+// ==================== SECTION BUILDERS ====================
+
+function buildSpeaking() {
+  const a = getAns();
+  const c = COLORS.speaking;
+  const bc = BORDER.speaking;
+  const iv = a.info || 0;
+  const fv = a.fluency || 0;
+  const frag = document.createDocumentFragment();
+
+  const IL = ["ไม่มีเนื้อหา/ไม่ตอบ","ตอบได้อย่างไม่สมบูรณ์ (ชื่อหรือนามสกุลเพียงอย่างเดียว)","ตอบข้อใดข้อหนึ่งถูกเพียงข้อเดียว","ตอบถูก 2 ข้อ","ตอบถูก 3 ข้อ","ตอบถูก 3 ข้อ + พูดเกี่ยวกับภาพบ้าง","ตอบถูก 4 ข้อ + พูดเกี่ยวกับภาพบ้าง","ตอบถูก 4 ข้อ + พูดสิ่งต่างๆ ในภาพ ≥6 อย่าง","ตอบถูก 5 ข้อ + บรรยายภาพไม่สมบูรณ์","ตอบถูกทั้ง 6 ข้อ บรรยายภาพเกือบสมบูรณ์ ≥10 อย่าง","ตอบถูกหมด บรรยายภาพอย่างละเอียด ประโยคยาวซับซ้อน"];
+  const FL = ["พูดไม่เป็นคำ ไม่มีความหมาย","พูดด้วยคำซ้ำๆ/ซากๆ มีเสียงสูงต่า","พูดคำพยางค์เดียวตะกุกตะกัก paraphasias บ่อย","พูดคล่องแต่ซ้ำๆ บางครั้งฟังไม่มีความหมาย","พูดๆ หยุดๆ ภาษาห้วนสั้น รูปแบบโทรเลข","ใช้คำพูดแบบโทรเลขบ่อย แต่พูดต่อเนื่องมากขึ้น","พูดเป็นประโยคสมบูรณ์มากขึ้น ถูกหลักไวยกรณ์มากขึ้น","Phonemic jargon แต่ฟังคล้ายประโยคจริง","พูดอ้อมค้อมแต่คล่อง มี verbal paraphasias มาก","ส่วนใหญ่ประโยคถูกต้อง อาจมี paraphasias บ้าง","พูดประโยคปกติ ซับซ้อน ยาว ไม่มี paraphasias"];
+  const QS = [{n:1,q:"วันนี้เป็นอย่างไรบ้าง",h:"ทักทาย ถามสภาพ"},{n:2,q:"คุณเคยมาที่นี่มาก่อนหรือเปล่า",h:"ตอบใช่/ไม่ใช่"},{n:3,q:"คุณชื่ออะไร",h:"ชื่อผู้ป่วย"},{n:4,q:"บ้านของคุณอยู่ที่ไหน",h:"ที่อยู่"},{n:5,q:"คุณมีอาชีพอะไร",h:"อาชีพ"},{n:6,q:"เล่าให้ฟังหน่อยว่าคุณมาที่นี่ทำไม หรือคุณมีปัญหาอะไร",h:"อธิบายอาการ"},{n:7,q:"บรรยายภาพ (ภาพที่ 1 ฉากชนบทไทย)",h:"วางภาพตรงหน้าผู้ป่วย กระตุ้นให้พูดให้เป็นประโยค"}];
+
+  // Question cards
+  const qCard = makeCard(bc, []);
+  qCard.appendChild(h("div",{"style":"font-size:12px;color:"+c+";font-weight:600;margin-bottom:8px"},"คำถามที่ใช้ถาม"));
+  QS.forEach(function(item){
+    const wrap = h("div",{"style":"margin-bottom:6px;padding:8px 10px;border-radius:6px;background:#ffffff06;border:1px solid #ffffff10"});
+    const top = h("div",{"class":"flex gap-8","style":"margin-bottom:5px"});
+    top.appendChild(h("span",{"style":"color:#555;font-size:12px;min-width:18px"},item.n+"."));
+    const txt = h("div",{});
+    txt.appendChild(h("div",{"style":"font-size:13px;color:#e0e0e0"},item.q));
+    txt.appendChild(h("div",{"style":"font-size:11px;color:#666"},item.h));
+    top.appendChild(txt);
+    wrap.appendChild(top);
+    const inp = h("input",{"type":"text","placeholder":"พิมพ์คำตอบผู้ป่วย...","style":"border-color:"+c+"40;color:"+c,"value":(a.notes&&a.notes[item.n])||""});
+    inp.oninput = function(){ const nn=Object.assign({},a.notes,{[item.n]:this.value}); const na=Object.assign({},a,{notes:nn}); currentSess.answers[currentSec]=na; saveSession(); refreshSummary(); };
+    wrap.appendChild(inp);
+    qCard.appendChild(wrap);
+  });
+  frag.appendChild(qCard);
+
+  // 1.1 Info slider
+  const infoCard = makeCard(bc, []);
+  infoCard.appendChild(makeCardTitle(c,"1.1 เนื้อหา",iv+"/10"));
+  const infoWrap = h("div",{"class":"flex-center gap-12","style":"margin-bottom:0"});
+  const infoRange = h("input",{"type":"range","min":"0","max":"10","value":iv,"style":"flex:1;accent-color:"+c});
+  infoRange.oninput = function(){ setAns(Object.assign({},getAns(),{info:+this.value})); };
+  const infoVal = h("span",{"style":"font-size:22px;font-weight:700;color:"+c+";min-width:44px;text-align:right"},iv);
+  infoWrap.appendChild(infoRange); infoWrap.appendChild(infoVal);
+  infoCard.appendChild(infoWrap);
+  infoCard.appendChild(h("div",{"class":"slider-label"},h("span",{"style":"color:"+c+";font-weight:600"},iv+": "),IL[iv]));
+  frag.appendChild(infoCard);
+
+  // 1.2 Fluency slider
+  const fluCard = makeCard(bc, []);
+  fluCard.appendChild(makeCardTitle(c,"1.2 การพูดคล่อง",fv+"/10"));
+  const fluWrap = h("div",{"class":"flex-center gap-12"});
+  const fluRange = h("input",{"type":"range","min":"0","max":"10","value":fv,"style":"flex:1;accent-color:"+c});
+  fluRange.oninput = function(){ setAns(Object.assign({},getAns(),{fluency:+this.value})); };
+  const fluVal = h("span",{"style":"font-size:22px;font-weight:700;color:"+c+";min-width:44px;text-align:right"},fv);
+  fluWrap.appendChild(fluRange); fluWrap.appendChild(fluVal);
+  fluCard.appendChild(fluWrap);
+  fluCard.appendChild(h("div",{"class":"slider-label"},h("span",{"style":"color:"+c+";font-weight:600"},fv+": "),FL[fv]));
+  frag.appendChild(fluCard);
+
+  const tot = h("div",{"class":"score-total","style":"color:"+c},"รวม: "+(iv+fv)+"/20");
+  frag.appendChild(tot);
+  return frag;
+}
+
+function buildAuditory() {
+  const a = getAns();
+  const c = COLORS.auditory;
+  const bc = BORDER.auditory;
+  const yn = a.yesno || {};
+  const frag = document.createDocumentFragment();
+
+  const YNITEMS = [{id:1,q:"คุณชื่อสบชายใช่หรือไม่",ans:"ไม่ใช่"},{id:2,q:"คุณชื่อเปรมใช่หรือไม่",ans:"ไม่ใช่"},{id:3,q:"คุณชื่อ___(ชื่อผู้ป่วย)___ใช่หรือไม่",ans:"ใช่"},{id:4,q:"บ้านของคุณอยู่ที่เชียงใหม่ใช่หรือไม่",ans:"ไม่ใช่"},{id:5,q:"บ้านของคุณอยู่ที่___(ตำบลจริง)___ใช่หรือไม่",ans:"ใช่"},{id:6,q:"คุณอยู่ที่สงขลาใช่หรือไม่",ans:"ไม่ใช่"},{id:7,q:"คุณเป็นผู้ชาย/ผู้หญิงใช่หรือไม่",ans:"ใช่"},{id:8,q:"คุณเป็นหมอใช่หรือไม่",ans:"ไม่ใช่"},{id:9,q:"ฉันเป็นผู้ชาย/ผู้หญิงใช่หรือไม่",ans:"ใช่"},{id:10,q:"ไฟในห้องนี้เปิดอยู่ใช่หรือไม่",ans:"ใช่"},{id:11,q:"ประตูปิดอยู่ใช่หรือไม่",ans:"ใช่"},{id:12,q:"ที่นี่เป็นโรงแรมใช่หรือไม่",ans:"ไม่ใช่"},{id:13,q:"ที่นี่เป็น___(ตอบตามจริง)___ใช่หรือไม่",ans:"ใช่"},{id:14,q:"คุณสวมชุดนอนสีแดงอยู่ใช่หรือไม่",ans:"ไม่ใช่"},{id:15,q:"กระดาษจะติดไฟได้ใช่หรือไม่",ans:"ใช่"},{id:16,q:"เดือนมีนาคมอยู่ก่อนเดือนมิถุนายนใช่หรือไม่",ans:"ใช่"},{id:17,q:"คุณกินกล้วยหอมโดยไม่ปลอกเปลือกใช่หรือไม่",ans:"ไม่ใช่"},{id:18,q:"อากาศหนาวมากช่วงเดือนเมษายนใช่หรือไม่",ans:"ไม่ใช่"},{id:19,q:"ม้าตัวใหญ่กว่าหมาใช่หรือไม่",ans:"ใช่"},{id:20,q:"คุณใช้ขวานตัดหญ้าใช่หรือไม่",ans:"ไม่ใช่"}];
+  const ynScore = Object.values(yn).filter(Boolean).length * 3;
+
+  const yn21 = makeCard(bc,[]);
+  yn21.appendChild(makeCardTitle(c,"2.1 คำถามใช่/ไม่ใช่",ynScore+"/60"));
+  yn21.appendChild(h("p",{"class":"hint"},"1 ข้อ = 3 คะแนน • ถ้าพูดไม่ได้ให้ทำท่าทาง"));
+  YNITEMS.forEach(function(item){
+    const checked = yn[item.id] || false;
+    yn21.appendChild(makeCheckRow(checked, c, item.id+". "+item.q, item.ans, function(){
+      const nn = Object.assign({},yn,{[item.id]:!checked});
+      setAns(Object.assign({},a,{yesno:nn}));
+    }));
+  });
+  const ynCount = h("div",{"style":"text-align:right;font-size:12px;color:"+c+";margin-top:4px"},Object.values(yn).filter(Boolean).length+"/20 ข้อ = "+ynScore+" คะแนน");
+  yn21.appendChild(ynCount);
+  frag.appendChild(yn21);
+
+  const WLC = [{k:"wl_obj",lbl:"ของจริง",items:"ถ้วย ไม้ขีดไฟ ดินสอ คอกไม้ หวี ไขควง"},{k:"wl_pic",lbl:"ภาพวาด",items:"ไม้ขีดไฟ ถ้วย หวี ไขควง ดินสอ คอกไม้"},{k:"wl_shp",lbl:"รูปทรง",items:"สี่เหลี่ยม สามเหลี่ยม วงกลม ลูกศร กากบาท สี่เหลี่ยมผืนผ้า"},{k:"wl_let",lbl:"ตัวหนังสือ",items:"ค ง น พ ร ส"},{k:"wl_num",lbl:"ตัวเลข",items:"5, 61, 500, 1367, 32, 5000"},{k:"wl_col",lbl:"สี",items:"น้ำเงิน น้ำตาล แดง เขียว เหลือง ดำ"}];
+  const wl = (a.wl_obj||0)+(a.wl_pic||0)+(a.wl_shp||0)+(a.wl_let||0)+(a.wl_num||0)+(a.wl_col||0);
+  const wl22 = makeCard(bc,[]);
+  wl22.appendChild(makeCardTitle(c,"2.2 การฟังระดับคำ",wl+"/60"));
+  wl22.appendChild(h("p",{"class":"hint"},"สั่งให้ชี้สิ่งของที่ตรงกับคำที่บอก • หมวดละ 10 คะแนน"));
+  WLC.forEach(function(cat){
+    const cv = a[cat.k] || 0;
+    const catDiv = h("div",{"class":"wl-cat","style":cv>0?"background:"+c+"0a;border-color:"+c+"40":""});
+    const top = h("div",{"class":"flex-center gap-8","style":"margin-bottom:4px"});
+    top.appendChild(h("span",{"style":"min-width:72px;font-size:12px;font-weight:600;color:"+(cv>0?"#fff":"#aaa")},cat.lbl));
+    top.appendChild(h("span",{"class":"flex-1","style":"font-size:11px;color:#555"},cat.items));
+    top.appendChild(h("span",{"style":"font-size:12px;font-weight:700;color:"+c},cv+"/10"));
+    catDiv.appendChild(top);
+    const row = h("div",{"class":"flex-center gap-8"});
+    row.appendChild(h("button",{"class":"btn-sm-minus","onclick":function(){ setAns(Object.assign({},a,{[cat.k]:Math.max(0,cv-1)})); }},"-"));
+    const bar = h("div",{"class":"prog-bg-thin flex-1"});
+    const fill = h("div",{"class":"prog-fill","style":"width:"+(cv*10)+"%;background:"+c});
+    bar.appendChild(fill);
+    row.appendChild(bar);
+    row.appendChild(h("button",{"class":"btn-sm-plus","style":"background:"+c,"onclick":function(){ setAns(Object.assign({},a,{[cat.k]:Math.min(10,cv+1)})); }},"+"));
+    catDiv.appendChild(row);
+    wl22.appendChild(catDiv);
+  });
+  frag.appendChild(wl22);
+
+  const CMDI = [{id:1,text:"ยกมือขึ้น",sc:2},{id:2,text:"หลับตา",sc:2},{id:3,text:"ชี้เก้าอี้",sc:2},{id:4,text:"ชี้เก้าอี้แล้วชี้ประตู",sc:4},{id:5,text:"ชี้ปากกาแล้วชี้หนังสือ",sc:4},{id:6,text:"ใช้ปากกาชี้หนังสือ",sc:8},{id:7,text:"ใช้หนังสือชี้ปากกา",sc:8},{id:8,text:"ใช้ปากกาชี้หวี",sc:8},{id:9,text:"ใช้หนังสือชี้หวี",sc:8},{id:10,text:"วางปากกาบนหนังสือแล้วหยิบปากกาให้ฉัน",sc:14},{id:11,text:"วางหวีไว้ข้างๆ ปากกาและเปิดหนังสือ",sc:20}];
+  const cmds = a.cmds || {};
+  let cmdScore = 0; CMDI.forEach(function(it){ cmdScore += (cmds[it.id]||0); });
+  const cmd23 = makeCard(bc,[]);
+  cmd23.appendChild(makeCardTitle(c,"2.3 คำสั่งเป็นขั้นตอน",cmdScore+"/80"));
+  cmd23.appendChild(h("p",{"class":"hint"},"สิ่งของ: ปากกา หวี หนังสือ"));
+  CMDI.forEach(function(item){
+    const val = cmds[item.id] || 0;
+    cmd23.appendChild(makeStepRow(item.id+". "+item.text, val, item.sc, c, function(v){ setAns(Object.assign({},a,{cmds:Object.assign({},cmds,{[item.id]:v})})); }));
+  });
+  frag.appendChild(cmd23);
+
+  const total = ynScore + wl + cmdScore;
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/200"));
+  return frag;
+}
+
+function buildRepetition() {
+  const a = getAns();
+  const c = COLORS.repetition;
+  const bc = BORDER.repetition;
+  const reps = a.reps || {};
+  const frag = document.createDocumentFragment();
+  const ITEMS = [{id:1,text:"เตียง",max:2},{id:2,text:"จมูก",max:2},{id:3,text:"ช้าง",max:2},{id:4,text:"หน้าต่าง",max:2},{id:5,text:"กล้วยหอม",max:2},{id:6,text:"ดินสอ",max:2},{id:7,text:"สีสิบห้า",max:4},{id:8,text:"เก้าสิบห้าเปอร์เซ็นต์",max:6},{id:9,text:"ร้อยหกสิบสองครั้ง",max:8},{id:10,text:"โทรศัพท์กำลังดังอยู่",max:8},{id:11,text:"เขาจะไม่กลับมาแล้ว",max:12},{id:12,text:"แม่ครัวดีใจเมื่อได้รับคำชม",max:10},{id:13,text:"กรมทหารมหาดเล็กรักษาพระองค์",max:10},{id:14,text:"เขาควรจะต้องรับทำงาน",max:12},{id:15,text:"บรรจุไข่ห้าโหลลงในกระเป๋าของฉัน",max:18}];
+  let total = 0; ITEMS.forEach(function(it){ total += reps[it.id]||0; });
+
+  const instrCard = makeCard(bc,[]);
+  instrCard.appendChild(h("p",{"style":"font-size:12px;color:#aaa;line-height:1.6"},"ถ้าพูดไม่ชัด (dysarthric) หรือสำเนียงภาษาถิ่น ถือว่าถูก\nเรียงลำดับผิด -1 • ใช้คำอื่นแทน (paraphasias) -1"));
+  frag.appendChild(instrCard);
+
+  ITEMS.forEach(function(item){
+    const val = reps[item.id] || 0;
+    const wrap = h("div",{"style":"margin-bottom:6px;padding:8px 12px;border-radius:8px;background:"+(val===item.max?c+"18":val>0?c+"08":"#ffffff06")+";border:1px solid "+(val===item.max?c:val>0?c+"40":"#ffffff12")});
+    const row = h("div",{"class":"flex-center gap-8","style":"margin-bottom:5px"});
+    row.appendChild(h("span",{"style":"color:#555;font-size:11px;min-width:18px"},item.id+"."));
+    row.appendChild(h("span",{"class":"flex-1","style":"font-size:13px;font-weight:600;color:"+(val>0?"#fff":"#aaa")},item.text));
+    row.appendChild(h("span",{"style":"font-size:10px;color:#555;min-width:36px"},"max "+item.max));
+    row.appendChild(h("button",{"class":"btn-sm-minus","onclick":function(){ setAns(Object.assign({},a,{reps:Object.assign({},reps,{[item.id]:Math.max(0,val-1)})})); }},"-"));
+    row.appendChild(h("span",{"style":"min-width:20px;text-align:center;font-size:13px;font-weight:700;color:"+c},val));
+    row.appendChild(h("button",{"class":"btn-sm-plus","style":"background:"+c,"onclick":function(){ setAns(Object.assign({},a,{reps:Object.assign({},reps,{[item.id]:Math.min(item.max,val+1)})})); }},"+"));
+    wrap.appendChild(row);
+    const inp = h("input",{"type":"text","placeholder":"ผู้ป่วยพูดว่า...","style":"border-color:"+c+"40;color:#e0aaff","value":(a.repNotes&&a.repNotes[item.id])||""});
+    inp.oninput = function(){ const nn=Object.assign({},a.repNotes,{[item.id]:this.value}); const na=Object.assign({},a,{repNotes:nn}); currentSess.answers[currentSec]=na; saveSession(); };
+    wrap.appendChild(inp);
+    frag.appendChild(wrap);
+  });
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/100"));
+  return frag;
+}
+
+function buildNaming() {
+  const a = getAns();
+  const c = COLORS.naming;
+  const bc = BORDER.naming;
+  const objScores = a.objScores || {};
+  let obj41 = 0; OBJS.forEach(function(o){ obj41 += objScores[o]||0; });
+  const cnt42 = a.animalCount || 0;
+  const comp43 = a.comp43 || {};
+  const resp44 = a.resp44 || {};
+  const sc43 = Object.values(comp43).filter(Boolean).length * 2;
+  const sc44 = Object.values(resp44).filter(Boolean).length * 2;
+  const total = obj41 + Math.min(cnt42,20) + sc43 + sc44;
+  const frag = document.createDocumentFragment();
+
+  // 4.1
+  const obj41Card = makeCard(bc,[]);
+  obj41Card.appendChild(makeCardTitle(c,"4.1 บอกชื่อสิ่งของ",obj41+"/60"));
+  obj41Card.appendChild(h("p",{"class":"hint"},"3=ตอบถูก | 2=phonemic paraphasia | 1=ต้องบอกใบ้ | 0=ตอบไม่ได้"));
+  const grid = h("div",{"class":"grid-2"});
+  OBJS.forEach(function(o){
+    const val = objScores[o] || 0;
+    const item = h("div",{"class":"obj-item","style":val>0?"background:"+c+"12;border-color:"+c+"40":""});
+    item.appendChild(h("span",{"class":"obj-name","style":val>0?"color:#fff":""},o));
+    const btns = h("div",{"class":"score-btns"});
+    [0,1,2,3].forEach(function(i){
+      const btn = h("button",{"class":"score-btn"+(val===i?" active":""),"style":val===i?"background:"+c:"","onclick":function(e){ e.stopPropagation(); setAns(Object.assign({},a,{objScores:Object.assign({},objScores,{[o]:i})})); }},i);
+      btns.appendChild(btn);
+    });
+    item.appendChild(btns);
+    grid.appendChild(item);
+  });
+  obj41Card.appendChild(grid);
+  frag.appendChild(obj41Card);
+
+  // 4.2 animal fluency
+  const anim42 = makeCard(bc,[]);
+  anim42.appendChild(makeCardTitle(c,"4.2 พูดคล่อง (บอกชื่อสัตว์)",Math.min(cnt42,20)+"/20"));
+  anim42.appendChild(h("p",{"class":"hint"},"บอกชื่อสัตว์ให้มากที่สุดในเวลา 1 นาที"));
+  const animRow = h("div",{"class":"flex gap-12","style":"align-items:flex-start"});
+  const timerEl = h("div",{"class":"timer-circle","id":"timer-circle","style":"border-color:"+c+";color:"+c},"60s");
+  animRow.appendChild(timerEl);
+  const animRight = h("div",{"class":"flex-1"});
+  const timerBtn = h("button",{"id":"timer-btn","style":"width:100%;padding:7px;background:"+BORDER.naming+";border:none;border-radius:7px;color:#fff;font-size:13px;font-weight:600;margin-bottom:7px;font-family:inherit","onclick":toggleTimer},"เริ่ม 1 นาที");
+  animRight.appendChild(timerBtn);
+  const cntRow = h("div",{"class":"flex-center gap-8","style":"margin-bottom:7px"});
+  cntRow.appendChild(h("button",{"class":"btn-minus","onclick":function(){ setAns(Object.assign({},a,{animalCount:Math.max(0,cnt42-1)})); }},"-"));
+  cntRow.appendChild(h("span",{"class":"flex-1","style":"text-align:center;font-size:18px;font-weight:700;color:"+c},cnt42+" ชนิด"));
+  cntRow.appendChild(h("button",{"class":"btn-plus","style":"background:"+c,"onclick":function(){ setAns(Object.assign({},a,{animalCount:cnt42+1})); }},"+"));
+  animRight.appendChild(cntRow);
+  const animNote = h("textarea",{"placeholder":"จดชื่อสัตว์ที่ผู้ป่วยพูด...","rows":"2","style":"border-color:"+c+"40;color:#ffddd2"},a.animalNotes||"");
+  animNote.oninput = function(){ const na=Object.assign({},a,{animalNotes:this.value}); currentSess.answers[currentSec]=na; saveSession(); };
+  animRight.appendChild(animNote);
+  animRow.appendChild(animRight);
+  anim42.appendChild(animRow);
+  frag.appendChild(anim42);
+
+  // 4.3
+  const CI = [{id:1,stem:"หญ้ามีสี________",ans:"เขียว"},{id:2,stem:"น้ำตาลมีรส________",ans:"หวาน"},{id:3,stem:"คนรักเท่าผืนหนัง คนชังเท่าผืน________",ans:"เสื่อ"},{id:4,stem:"เหาทำนิ่งเฉยเหมือนทองไม่รู้________",ans:"ร้อน"},{id:5,stem:"วันเฉลิมพระชนมพรรษาในหลวงตรงกับวันที่ 5 ของเดือน________",ans:"ธันวาคม"}];
+  const comp43Card = makeCard(bc,[]);
+  comp43Card.appendChild(makeCardTitle(c,"4.3 เติมประโยคให้สมบูรณ์",sc43+"/10"));
+  comp43Card.appendChild(h("p",{"class":"hint"},"ตอบถูก = 2 | phonemic paraphasia = 1"));
+  CI.forEach(function(item){
+    const checked = comp43[item.id] || false;
+    comp43Card.appendChild(makeCheckRow(checked, c, item.stem, item.ans, function(){ setAns(Object.assign({},a,{comp43:Object.assign({},comp43,{[item.id]:!checked})})); }));
+  });
+  frag.appendChild(comp43Card);
+
+  // 4.4
+  const RI = [{id:1,q:"คุณใช้อะไรเขียน",ans:"ปากกา/ดินสอ"},{id:2,q:"หมอกสีอะไร",ans:"ขาว"},{id:3,q:"สัปดาห์หนึ่งมีกี่วัน",ans:"7"},{id:4,q:"คุณซื้อแสตมป์ที่ไหน",ans:"ที่ทำการไปรษณีย์"},{id:5,q:"พยาบาลทำงานที่ไหน",ans:"โรงพยาบาล"}];
+  const resp44Card = makeCard(bc,[]);
+  resp44Card.appendChild(makeCardTitle(c,"4.4 การพูดโต้ตอบ",sc44+"/10"));
+  resp44Card.appendChild(h("p",{"class":"hint"},"ตอบถูก = 2 | phonemic paraphasia = 1"));
+  RI.forEach(function(item){
+    const checked = resp44[item.id] || false;
+    resp44Card.appendChild(makeCheckRow(checked, c, item.q, item.ans, function(){ setAns(Object.assign({},a,{resp44:Object.assign({},resp44,{[item.id]:!checked})})); }));
+  });
+  frag.appendChild(resp44Card);
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/100"));
+  return frag;
+}
+
+function buildReading() {
+  const a = getAns();
+  const c = COLORS.reading;
+  const bc = BORDER.reading;
+  const mc51 = a.mc51 || {};
+  const frag = document.createDocumentFragment();
+
+  const MC51I = [{id:1,stem:"น้ำฝน________",opts:["สีฟ้า","เปียก","เรียก","ทะเล"],ans:"เปียก",sc:2},{id:2,stem:"ทหารถือ________",opts:["ปืน","ยิง","ฟืน","ของช้า"],ans:"ปืน",sc:2},{id:3,stem:"คุณสมศักดิ์ซ่อมรถ เขาเป็น________",opts:["ช่างตัดเสื้อ","เครื่องยนต์","ช่างเครื่องยนต์","รถประจำทาง"],ans:"ช่างเครื่องยนต์",sc:4},{id:4,stem:"ครูมีหน้าที่________",opts:["เปิดโรงเรียน","สอนหนังสือ","เลี้ยงดูเด็ก","ทำความสะอาด"],ans:"สอนหนังสือ",sc:4},{id:5,stem:"พลั้วและเสียมทำจาก________",opts:["ชาวนา","ป่า","โลหะ","ตัด"],ans:"โลหะ",sc:6},{id:6,stem:"ชาวนาปลูกข้าว นอกจากนี้เขาก็ปลูก________",opts:["ถ่านหิน","รถทรักเตอร์","พื้นดก","ผัก"],ans:"ผัก",sc:6},{id:7,stem:"ชาติต่างๆ พยายามค้นหาพลังงานทดแทน เช่น________",opts:["น้ำเนือด","ธนาคาร","แก๊สธรรมชาติ","เศรษฐกิจ"],ans:"แก๊สธรรมชาติ",sc:8},{id:8,stem:"ภาคอีสานอาจยังอุดมสมบูรณ์ถ้า________",opts:["มีผู้คน","ฝนตก","ได้รับการดูแล","มีไฟฟ้า"],ans:"ได้รับการดูแล",sc:8}];
+  let sc51=0; MC51I.forEach(function(it){if(mc51[it.id]===it.ans)sc51+=it.sc;});
+  const mc51Card = makeCard(bc,[]);
+  mc51Card.appendChild(makeCardTitle(c,"5.1 ความเข้าใจการอ่านระดับประโยค",sc51+"/40"));
+  MC51I.forEach(function(item){
+    const sel = mc51[item.id];
+    const itemDiv = h("div",{"style":"margin-bottom:8px;padding:9px 11px;border-radius:8px;background:"+(sel?(sel===item.ans?"#001a00":"#1a0000"):"#00000020")+";border:1px solid "+(sel?(sel===item.ans?c:"#cc3333"):"#ffffff12")});
+    const top = h("div",{"style":"font-size:12px;color:#ccc;margin-bottom:5px"});
+    top.innerHTML = "<span style=\"color:"+c+"\">"+item.id+". </span>"+item.stem+"<span style=\"float:right;font-size:11px;color:#555\">"+item.sc+"p</span>";
+    itemDiv.appendChild(top);
+    const opts = h("div",{"class":"flex wrap gap-5"});
+    item.opts.forEach(function(opt){
+      const isCorrect = opt === item.ans;
+      const isSelected = sel === opt;
+      const btn = h("button",{"class":"mc-opt"+(isSelected?" "+(isCorrect?"selected-correct":"selected-wrong"):""),"style":isSelected&&isCorrect?"background:"+c:"","onclick":function(){ setAns(Object.assign({},a,{mc51:Object.assign({},mc51,{[item.id]:opt})})); }},opt);
+      opts.appendChild(btn);
+    });
+    itemDiv.appendChild(opts);
+    mc51Card.appendChild(itemDiv);
+  });
+  frag.appendChild(mc51Card);
+
+  const cmds52=a.cmds52||{};
+  const CMD52=[{id:1,text:"ยกมือขึ้น",sc:1},{id:2,text:"โบกมือลา",sc:1},{id:3,text:"หลับตา",sc:1},{id:4,text:"วาดรูปกากบาทด้วยมือ",sc:2},{id:5,text:"ชี้เก้าอี้แล้วชี้ประตู",sc:2},{id:6,text:"หยิบดินสอ เคาะ 3 ที แล้ววางไว้ที่เดิม",sc:3}];
+  let sc52=0; CMD52.forEach(function(it){sc52+=cmds52[it.id]||0;});
+  const cmd52Card = makeCard(bc,[]);
+  cmd52Card.appendChild(makeCardTitle(c,"5.2 อ่านแล้วทำตามคำสั่ง",sc52+"/20"));
+  CMD52.forEach(function(item){ cmd52Card.appendChild(makeStepRow(item.text,cmds52[item.id]||0,item.sc,c,function(v){ setAns(Object.assign({},a,{cmds52:Object.assign({},cmds52,{[item.id]:v})})); })); });
+  frag.appendChild(cmd52Card);
+
+  function simpleCounter(label, key, max, hint) {
+    const val = a[key]||0;
+    const card = makeCard(bc,[]);
+    card.appendChild(makeCardTitle(c,label,val+"/"+max));
+    if(hint) card.appendChild(h("p",{"class":"hint"},hint));
+    card.appendChild(makeCounter(val,max,c,function(v){ setAns(Object.assign({},a,{[key]:v})); }));
+    frag.appendChild(card);
+  }
+  simpleCounter("5.3 จับคู่คำอ่านกับของจริง","s53",6,"ถ้วย หวี ดินสอ คอกไม้ ไม้ขีดไฟ ไขควง");
+  simpleCounter("5.4 จับคู่คำกับภาพ","s54",6,null);
+  simpleCounter("5.6 จับคู่คำพูดกับคำเขียน","s55",4,null);
+  simpleCounter("5.7 แยกความแตกต่างของตัวอักษร","s56",6,"ค ง น พ ร ส");
+
+  const s57=a.s57||{};
+  const sc57=["กา","ยืม","หน้า","กล้วย","กระดุน","ดูกเต่า"].filter(function(_,i){return s57[i];}).length;
+  const sp57 = makeCard(bc,[]);
+  sp57.appendChild(makeCardTitle(c,"5.8 จำระลึกคำจากการสะกด",sc57+"/6"));
+  [["ก-า","กา"],["อ-ื-ม","ยืม"],["ห-น-า","หน้า"],["ก-ล-อ-ย","กล้วย"],["ก-ร-ะ-ดุ-น","กระดุน"],["อ-อ-ก-เ-ต-า","ดูกเต่า"]].forEach(function(pair,i){
+    sp57.appendChild(makeCheckRow(s57[i]||false,c,"<span style=\"font-family:monospace\">"+pair[0]+"</span>",pair[1],function(){ setAns(Object.assign({},a,{s57:Object.assign({},s57,{[i]:!s57[i]})})); }));
+  });
+  frag.appendChild(sp57);
+
+  const s58=a.s58||{};
+  const sc58=["นา","เมา","บ้าน","ดินสอ","กระดาน","น้ำตาเทียน"].filter(function(_,i){return s58[i];}).length;
+  const sp58 = makeCard(bc,[]);
+  sp58.appendChild(makeCardTitle(c,"5.9 การสะกดคำ",sc58+"/6"));
+  ["นา","เมา","บ้าน","ดินสอ","กระดาน","น้ำตาเทียน"].forEach(function(wd,i){
+    sp58.appendChild(makeCheckRow(s58[i]||false,c,wd,null,function(){ setAns(Object.assign({},a,{s58:Object.assign({},s58,{[i]:!s58[i]})})); }));
+  });
+  frag.appendChild(sp58);
+  simpleCounter("6.7 ถอดคำในประโยค","s59",10,null);
+
+  const sc51x=sc51,sc52x=sc52,s53x=a.s53||0,s54x=a.s54||0,s55x=a.s55||0,s56x=a.s56||0,s59x=a.s59||0;
+  const total=sc51x+sc52x+s53x+s54x+s55x+s56x+sc57+sc58+s59x;
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/100"));
+  return frag;
+}
+
+function buildWriting() {
+  const a = getAns();
+  const c = COLORS.writing;
+  const bc = BORDER.writing;
+  const frag = document.createDocumentFragment();
+  const WSUBS=[{key:"s61",lbl:"6.1 เขียนตามคำสั่ง",max:6,desc:"ให้เขียนชื่อที่อยู่ • เขียนถูก=1 • สะกดผิด=0.5"},{key:"s62",lbl:"6.2 เขียนเอง",max:34,desc:"บรรยายภาพที่ 1 เวลา 3 นาที • ประโยค≥6 คำ=8คะแนน/ประโยค"},{key:"s63",lbl:"6.3 เขียนตามคำบอก (ประโยค)",max:10,desc:"เขียน: บรรจุไข่ห้าโหลลงในกระเป๋าของฉัน"},{key:"s64",lbl:"6.4 เขียนตามคำบอก (คำ)",max:10,desc:"ปืน นาฬิกา จมูก ก้อน โทรศัพท์ ไขควง"}];
+  WSUBS.forEach(function(sub){
+    const val = a[sub.key]||0;
+    const card = makeCard(bc,[]);
+    card.appendChild(makeCardTitle(c,sub.lbl,val+"/"+sub.max));
+    card.appendChild(h("p",{"class":"hint"},sub.desc));
+    card.appendChild(makeCounter(val,sub.max,c,function(v){ setAns(Object.assign({},a,{[sub.key]:v})); }));
+    frag.appendChild(card);
+  });
+  const w65 = makeCard(bc,[]);
+  w65.appendChild(h("div",{"style":"font-size:13px;color:"+c+";font-weight:600;margin-bottom:6px"},"6.5 เขียนตัวอักษรและตัวเลขเอง"));
+  w65.appendChild(h("p",{"class":"hint"},"บอกให้เขียนตัวอักษรและตัวเลข 0-20 โดยไม่บอก"));
+  const w65row = h("div",{"class":"flex gap-12 wrap"});
+  const w65a = h("div",{}); w65a.appendChild(h("div",{"style":"font-size:11px;color:#fff0a0;margin-bottom:4px"},"ตัวอักษร ก-ฮ (max 12)")); w65a.appendChild(makeCounter(a.s65a||0,12,c,function(v){ setAns(Object.assign({},a,{s65a:v})); }));
+  const w65b = h("div",{}); w65b.appendChild(h("div",{"style":"font-size:11px;color:#fff0a0;margin-bottom:4px"},"ตัวเลข 0-20 (max 10)")); w65b.appendChild(makeCounter(a.s65b||0,10,c,function(v){ setAns(Object.assign({},a,{s65b:v})); }));
+  w65row.appendChild(w65a); w65row.appendChild(w65b); w65.appendChild(w65row);
+  frag.appendChild(w65);
+  const w66 = makeCard(bc,[]);
+  w66.appendChild(h("div",{"style":"font-size:13px;color:"+c+";font-weight:600;margin-bottom:6px"},"6.6 เขียนตัวอักษรและตัวเลขตามคำบอก"));
+  w66.appendChild(h("p",{"class":"hint"},"ตัวอักษร: ท ม จ บ ฟ (max 25) • ตัวเลข: 5,61,32,700,1867 (max 5)"));
+  const w66row = h("div",{"class":"flex gap-12 wrap"});
+  const w66a = h("div",{}); w66a.appendChild(h("div",{"style":"font-size:11px;color:#fff0a0;margin-bottom:4px"},"ตัวอักษร (max 25)")); w66a.appendChild(makeCounter(a.s66a||0,25,c,function(v){ setAns(Object.assign({},a,{s66a:v})); }));
+  const w66b = h("div",{}); w66b.appendChild(h("div",{"style":"font-size:11px;color:#fff0a0;margin-bottom:4px"},"ตัวเลข (max 5)")); w66b.appendChild(makeCounter(a.s66b||0,5,c,function(v){ setAns(Object.assign({},a,{s66b:v})); }));
+  w66row.appendChild(w66a); w66row.appendChild(w66b); w66.appendChild(w66row);
+  frag.appendChild(w66);
+  const total=(a.s61||0)+(a.s62||0)+(a.s63||0)+(a.s64||0)+(a.s65a||0)+(a.s65b||0)+(a.s66a||0)+(a.s66b||0);
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/100"));
+  return frag;
+}
+
+function buildApraxia() {
+  const a = getAns();
+  const c = COLORS.apraxia;
+  const bc = BORDER.apraxia;
+  const sc = a.sc || {};
+  let total = 0; Object.values(sc).forEach(function(v){total+=v||0;});
+  const frag = document.createDocumentFragment();
+  const CATS=[{label:"ร่างกายส่วนบน",items:[{id:"a1",text:"กำทนัด"},{id:"a2",text:"โบกมือ"},{id:"a3",text:"โบกมือลา"},{id:"a4",text:"เกาหัว"},{id:"a5",text:"คิ้นิ้ว"}]},{label:"ใบหน้า",items:[{id:"a6",text:"แลบลิ้น"},{id:"a7",text:"หลับตา"},{id:"a8",text:"ผิวปาก"},{id:"a9",text:"ดมดอกไม้"},{id:"a10",text:"เป่าเทียนให้ดับ"}]},{label:"เครื่องมือ",items:[{id:"a11",text:"ใช้หวี"},{id:"a12",text:"ใช้แปรงสีฟัน"},{id:"a13",text:"ใช้ช้อนรับประทานอาหาร"},{id:"a14",text:"ใช้ค้อน"},{id:"a15",text:"ใช้กุญแจ"}]},{label:"ประสมประสาน",items:[{id:"a16",text:"ทำท่าขับรถ"},{id:"a17",text:"ทำท่าเคาะและเปิดประตู"},{id:"a18",text:"ทำท่าริดผ้า"},{id:"a19",text:"ทำท่าจุดบุหรี่"},{id:"a20",text:"ทำท่าเล่นระนาด"}]}];
+  const instrCard = makeCard(bc,[]);
+  instrCard.appendChild(h("p",{"style":"font-size:12px;color:#aaa;line-height:1.7"},"3 = ทำได้ถูกต้องโดยตรง   2 = ทำได้หลังสาธิต   1 = ทำได้โดยใช้ของจริงช่วย   0 = ทำไม่ได้เลย"));
+  frag.appendChild(instrCard);
+  CATS.forEach(function(cat){
+    const catCard = makeCard(bc,[]);
+    catCard.appendChild(h("div",{"style":"font-size:12px;color:"+c+";font-weight:600;margin-bottom:8px"},cat.label));
+    cat.items.forEach(function(item){
+      const val = sc[item.id] || 0;
+      const row = h("div",{"style":"display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:4px;border-radius:6px;background:"+(val===3?c+"20":val>0?c+"0a":"#ffffff06")+";border:1px solid "+(val===3?c:val>0?c+"40":"#ffffff12")});
+      row.appendChild(h("span",{"class":"flex-1","style":"font-size:12px;color:"+(val>0?"#fff":"#aaa")},item.text));
+      const btns = h("div",{"class":"score-btns"});
+      [0,1,2,3].forEach(function(s){
+        const btn = h("button",{"class":"score-btn"+(val===s?" active":""),"style":val===s?"background:"+c:"","onclick":function(){ setAns(Object.assign({},a,{sc:Object.assign({},sc,{[item.id]:s})})); }},s);
+        btns.appendChild(btn);
+      });
+      row.appendChild(btns);
+      catCard.appendChild(row);
+    });
+    frag.appendChild(catCard);
+  });
+  frag.appendChild(h("div",{"class":"score-total","style":"color:"+c},"รวม: "+total+"/60"));
+  return frag;
+}
+
+// ==================== TIMER ====================
+let timerInterval = null;
+let timerRunning = false;
+let timerSeconds = 0;
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    const btn = document.getElementById("timer-btn");
+    if (btn) { btn.textContent = "เริ่ม 1 นาที"; btn.style.background = BORDER.naming; }
+  } else {
+    timerSeconds = 0;
+    timerRunning = true;
+    const btn = document.getElementById("timer-btn");
+    if (btn) { btn.textContent = "หยุด"; btn.style.background = "#cc3333"; }
+    timerInterval = setInterval(function(){
+      timerSeconds++;
+      const remaining = 60 - timerSeconds;
+      const circle = document.getElementById("timer-circle");
+      const btn2 = document.getElementById("timer-btn");
+      if (circle) { circle.textContent = remaining+"s"; circle.style.borderColor = remaining<=10?"#cc3333":COLORS.naming; circle.style.color = remaining<=10?"#cc3333":COLORS.naming; }
+      if (timerSeconds >= 60) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        if (circle) circle.textContent = "0s";
+        if (btn2) { btn2.textContent = "เริ่ม 1 นาที"; btn2.style.background = BORDER.naming; }
+      }
+    }, 1000);
+  }
+}
+
+// ==================== SECTION RENDER ====================
+const BUILDERS = { speaking:buildSpeaking, auditory:buildAuditory, repetition:buildRepetition, naming:buildNaming, reading:buildReading, writing:buildWriting, apraxia:buildApraxia };
+
+function refreshSection() {
+  clearInterval(timerInterval); timerRunning = false;
+  const body = document.getElementById("section-body");
+  body.innerHTML = "";
+  const sc = getScores(currentSess);
+  const secInfo = SECS.find(function(s){return s.id===currentSec;});
+  const c = COLORS[currentSec];
+  document.getElementById("sec-title").textContent = secInfo.label;
+  document.getElementById("sec-title").style.color = c;
+  document.getElementById("sec-id-label").textContent = currentSec;
+  document.getElementById("sec-score").textContent = sc[currentSec];
+  document.getElementById("sec-score").style.color = c;
+  document.getElementById("sec-max").textContent = "/"+secInfo.max;
+  const header = document.getElementById("section-header");
+  header.style.border = "1px solid "+BORDER[currentSec]+"40";
+  body.appendChild(BUILDERS[currentSec]());
+}
+
+function refreshSummary() {
+  const sc = getScores(currentSess);
+  const sev = aqSeverity(sc.aq);
+  const aph = classifyAphasia(sc);
+  const rwTotal = sc.reading + sc.writing;
+  const summaryEl = document.getElementById("score-summary");
+  summaryEl.innerHTML = "";
+  const title = h("div",{"style":"font-size:12px;color:#666;margin-bottom:10px"},"สรุปคะแนน");
+  summaryEl.appendChild(title);
+  [{l:"พูดเอง",k:"speaking",max:20,c:"#74c69d"},{l:"การฟัง",k:"auditory",max:200,c:"#5fa8d3"},{l:"พูดตาม",k:"repetition",max:100,c:"#c77dff"},{l:"การเรียกชื่อ",k:"naming",max:100,c:"#f4a261"},{l:"การอ่าน",k:"reading",max:100,c:"#48cae4"},{l:"การเขียน",k:"writing",max:100,c:"#ffd166"},{l:"Apraxia",k:"apraxia",max:60,c:"#ef476f"}].forEach(function(s2){
+    const row = h("div",{"style":"display:flex;align-items:center;gap:8px;margin-bottom:6px"});
+    row.appendChild(h("span",{"style":"font-size:11px;color:#666;min-width:80px"},s2.l));
+    const bg = h("div",{"class":"prog-bg"});
+    bg.appendChild(h("div",{"class":"prog-fill","style":"width:"+Math.min((sc[s2.k]/s2.max)*100,100)+"%;background:"+s2.c}));
+    row.appendChild(bg);
+    row.appendChild(h("span",{"style":"font-size:12px;font-weight:700;color:"+s2.c+";min-width:60px;text-align:right"},sc[s2.k]+"/"+s2.max));
+    summaryEl.appendChild(row);
+  });
+  const bot = h("div",{"style":"border-top:1px solid #ffffff0a;padding-top:10px;margin-top:4px"});
+  const aqRow = h("div",{"style":"display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"});
+  const left = h("div",{});
+  left.appendChild(h("div",{"style":"font-size:11px;color:#555;margin-bottom:2px"},"อ่าน+เขียน: "+rwTotal+"/200 = "+Math.round(rwTotal/10*10)/10+"/20"));
+  left.appendChild(h("div",{"style":"font-size:11px;color:#555"},"Praxis: "+sc.apraxia+"/60 = "+Math.round(sc.apraxia/6*10)/10+"/10"));
+  aqRow.appendChild(left);
+  const right = h("div",{"style":"text-align:right"});
+  right.appendChild(h("div",{"style":"font-size:26px;font-weight:700;color:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},sc.aq+"/100"));
+  right.appendChild(h("div",{"style":"font-size:11px;color:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},sev.label));
+  aqRow.appendChild(right);
+  bot.appendChild(aqRow);
+  const aphBox = h("div",{"style":"background:#08080f;border-radius:6px;padding:7px 10px;border:1px solid #ffffff10;font-size:12px"});
+  aphBox.appendChild(h("span",{"style":"color:#666"},"ประเภท: "));
+  aphBox.appendChild(h("strong",{"style":"color:#fff"},aph));
+  bot.appendChild(aphBox);
+  const formula = h("div",{"style":"font-size:10px;color:#444;margin-top:6px"});
+  formula.textContent = "AQ = ("+sc.speaking+" + "+sc.auditory+"/20 + "+sc.repetition+"/10 + "+sc.naming+"/10) × 2 = "+sc.aq;
+  bot.appendChild(formula);
+  summaryEl.appendChild(bot);
+
+  // Fix severity color
+  // sev color applied inline - no querySelector needed
+  
+}
+
+// ==================== NAVIGATION ====================
+function showView(name) {
+  document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active");});
+  document.getElementById("view-"+name).classList.add("active");
+  if (name === "patients") renderPatients();
+  if (name === "history") renderHistory();
+  if (name === "assess") renderAssess();
+}
+
+// ==================== PATIENTS ====================
+function toggleForm() {
+  const f = document.getElementById("patient-form");
+  f.style.display = f.style.display === "none" ? "block" : "none";
+}
+
+function addPatient() {
+  const name = document.getElementById("f-name").value.trim();
+  if (!name) return;
+  const id = Date.now().toString();
+  DB[id] = { id:id, name:name, age:document.getElementById("f-age").value, dob:document.getElementById("f-dob").value, diagnosis:document.getElementById("f-diagnosis").value, sessions:[] };
+  saveData(DB);
+  document.getElementById("f-name").value=""; document.getElementById("f-age").value=""; document.getElementById("f-dob").value=""; document.getElementById("f-diagnosis").value="";
+  toggleForm();
+  renderPatients();
+}
+
+function deletePatient(id) {
+  if (!confirm("ลบผู้ป่วยรายนี้?")) return;
+  delete DB[id];
+  saveData(DB);
+  renderPatients();
+}
+
+function renderPatients() {
+  const list = document.getElementById("patient-list");
+  list.innerHTML = "";
+  const patients = Object.values(DB);
+  if (patients.length === 0) {
+    list.innerHTML = "<div style=\"text-align:center;padding:60px 20px;color:#333\"><div style=\"font-size:48px;margin-bottom:12px\">👤</div><div>ยังไม่มีผู้ป่วย</div></div>";
+    return;
+  }
+  patients.forEach(function(p){
+    const sessions = p.sessions || [];
+    const last = sessions[sessions.length-1];
+    const sc = last ? getScores(last) : null;
+    const card = h("div",{"class":"patient-card"});
+    const top = h("div",{"class":"flex-between"});
+    const info = h("div",{});
+    info.appendChild(h("div",{"style":"font-size:15px;font-weight:700"},p.name));
+    if (p.age || p.diagnosis) info.appendChild(h("div",{"style":"font-size:11px;color:#555;margin-top:2px"},(p.age?"อายุ "+p.age+" ปี":"")+(p.diagnosis?" • "+p.diagnosis:"")));
+    top.appendChild(info);
+    top.appendChild(h("button",{"style":"background:none;border:none;color:#444;font-size:18px;padding:0 4px","onclick":function(){ deletePatient(p.id); }},"×"));
+    card.appendChild(top);
+    if (sc) {
+      const sev = aqSeverity(sc.aq);
+      const chips = h("div",{"class":"flex flex-wrap gap-5","style":"margin-top:10px;margin-bottom:4px"});
+      [{l:"AQ",v:sc.aq,c:(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},{l:"พูด",v:sc.speaking,c:"#5fa8d3"},{l:"ฟัง",v:sc.auditory,c:"#c77dff"},{l:"ซ้ำ",v:sc.repetition,c:"#f4a261"},{l:"เรียก",v:sc.naming,c:"#48cae4"}].forEach(function(s2){
+        const cl = h("div",{"class":"chip"});
+        cl.style.border = "1px solid #ffffff20";
+        cl.appendChild(h("div",{"class":"chip-label"},s2.l));
+        const vEl = h("div",{"class":"chip-val"},s2.v);
+        cl.appendChild(vEl);
+        chips.appendChild(cl);
+      });
+      chips.children[0].querySelector(".chip-val").style.color = (sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333");
+      const typechip = h("div",{"class":"chip","style":"border:1px solid #ffffff15"});
+      typechip.appendChild(h("div",{"class":"chip-label"},"ประเภท"));
+      typechip.appendChild(h("div",{"style":"font-size:10px;font-weight:600;color:#fff"},classifyAphasia(sc)));
+      chips.appendChild(typechip);
+      card.appendChild(chips);
+      const sevEl = h("div",{"style":"font-size:10px;color:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},sev.label);
+      card.appendChild(sevEl);
+    }
+    const btns = h("div",{"class":"flex gap-7","style":"margin-top:10px"});
+    const newBtn = h("button",{"class":"btn-blue","onclick":function(){
+      currentPid = p.id;
+      currentSess = {id:Date.now().toString(), date:Date.now(), patientId:p.id, answers:{}};
+      currentSec = "speaking";
+      showView("assess");
+    }},"+ ทดสอบใหม่");
+    btns.appendChild(newBtn);
+    if (sessions.length > 0) {
+      const histBtn = h("button",{"class":"btn-secondary","onclick":function(){ currentPid=p.id; showView("history"); }},"ประวัติ ("+sessions.length+")");
+      btns.appendChild(histBtn);
+    }
+    card.appendChild(btns);
+    list.appendChild(card);
+  });
+}
+
+// ==================== HISTORY ====================
+function renderHistory() {
+  const p = DB[currentPid];
+  if (!p) return;
+  document.getElementById("history-name").textContent = p.name;
+  const list = document.getElementById("history-list");
+  list.innerHTML = "";
+  const sessions = (p.sessions||[]).slice().reverse();
+  sessions.forEach(function(s, idx){
+    const sc = getScores(s);
+    const sev = aqSeverity(sc.aq);
+    const d = new Date(s.date);
+    const prev = sessions[idx+1];
+    const prevSc = prev ? getScores(prev) : null;
+    const diff = prevSc ? sc.aq - prevSc.aq : null;
+    const card = h("div",{"class":"history-card"});
+    const top = h("div",{"class":"flex-between","style":"margin-bottom:10px"});
+    const dateDiv = h("div",{});
+    dateDiv.appendChild(h("div",{"style":"font-size:12px;color:#888"},d.toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"})));
+    dateDiv.appendChild(h("div",{"style":"font-size:10px;color:#444"},d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})));
+    top.appendChild(dateDiv);
+    top.appendChild(h("button",{"style":"padding:4px 10px;background:#1b4965;border:none;border-radius:6px;color:#fff;font-size:11px;font-family:inherit","onclick":function(){
+      currentSess=s; currentSec="speaking"; showView("assess");
+    }},"เปิด/แก้ไข"));
+    card.appendChild(top);
+    const aqSection = h("div",{"style":"margin-bottom:8px"});
+    const aqRow = h("div",{"class":"flex-between","style":"margin-bottom:3px"});
+    aqRow.appendChild(h("span",{"style":"font-size:11px;color:#666"},"Aphasia Quotient (AQ)"));
+    aqRow.appendChild(h("span",{"style":"font-size:16px;font-weight:700;color:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},sc.aq+"/100"));
+    aqSection.appendChild(aqRow);
+    const bar = h("div",{"style":"height:5px;background:#ffffff0a;border-radius:3px"});
+    bar.appendChild(h("div",{"style":"height:100%;border-radius:3px;width:"+sc.aq+"%;background:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")}));
+    aqSection.appendChild(bar);
+    aqSection.appendChild(h("div",{"style":"font-size:10px;margin-top:2px;color:"+(sev.cls==="sev-mild"?"#74c69d":sev.cls==="sev-moderate"?"#f4a261":sev.cls==="sev-severe"?"#ff6b35":"#cc3333")},sev.label));
+    card.appendChild(aqSection);
+    const grid = h("div",{"class":"grid-2","style":"gap:5px;margin-bottom:8px"});
+    [{l:"พูดเอง",k:"speaking",max:20,c:"#74c69d"},{l:"การฟัง",k:"auditory",max:200,c:"#5fa8d3"},{l:"พูดตาม",k:"repetition",max:100,c:"#c77dff"},{l:"การเรียกชื่อ",k:"naming",max:100,c:"#f4a261"},{l:"การอ่าน",k:"reading",max:100,c:"#48cae4"},{l:"การเขียน",k:"writing",max:100,c:"#ffd166"},{l:"Apraxia",k:"apraxia",max:60,c:"#ef476f"}].forEach(function(s2){
+      const cell = h("div",{"style":"background:#08080f;border-radius:6px;padding:5px 8px;border:1px solid "+s2.c+"20"});
+      cell.appendChild(h("div",{"style":"font-size:10px;color:#555"},s2.l));
+      const vrow = h("div",{"class":"flex-between","style":"align-items:baseline"});
+      vrow.appendChild(h("span",{"style":"font-size:15px;font-weight:700;color:"+s2.c},sc[s2.k]));
+      vrow.appendChild(h("span",{"style":"font-size:10px;color:#444"},"/"+s2.max));
+      cell.appendChild(vrow);
+      grid.appendChild(cell);
+    });
+    card.appendChild(grid);
+    const infoBox = h("div",{"style":"background:#08080f;border-radius:6px;padding:6px 8px;border:1px solid #ffffff10;font-size:11px;margin-bottom:4px"});
+    infoBox.innerHTML = "ประเภท: <strong style=\"color:#fff\">"+classifyAphasia(sc)+"</strong><br><span style=\"color:#555\">อ่าน+เขียน: "+(sc.reading+sc.writing)+"/200 = "+Math.round((sc.reading+sc.writing)/10*10)/10+"/20 • Praxis: "+sc.apraxia+"/60 = "+Math.round(sc.apraxia/6*10)/10+"/10</span>";
+    card.appendChild(infoBox);
+    if (diff !== null) card.appendChild(h("div",{"style":"font-size:11px;color:"+(diff>=0?"#74c69d":"#cc3333")},(diff>=0?"+":"")+diff.toFixed(1)+" จากครั้งก่อน"));
+    list.appendChild(card);
+  });
+
+  // Aphasia table
+  const tbody = document.getElementById("aphasia-table-body");
+  tbody.innerHTML = "";
+  APHASIA_TABLE.forEach(function(row,i){
+    const tr = h("tr",{"class":"aph-row"});
+    tr.appendChild(h("td",{},row.t));
+    tr.appendChild(h("td",{"style":"color:"+(row.fl==="5-10"?"#74c69d":"#f4a261")},row.fl));
+    tr.appendChild(h("td",{"style":"color:#5fa8d3"},row.au));
+    tr.appendChild(h("td",{"style":"color:#c77dff"},row.re));
+    tr.appendChild(h("td",{"style":"color:#f4a261"},row.nm));
+    tbody.appendChild(tr);
+  });
+}
+
+// ==================== ASSESS ====================
+function renderAssess() {
+  if (!currentPid || !currentSess) return;
+  const p = DB[currentPid];
+  document.getElementById("assess-patient-info").textContent = (p?p.name:"") + " • " + new Date(currentSess.date).toLocaleDateString("th-TH");
+  renderTabs();
+  renderCurrentSection();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById("section-tabs");
+  tabs.innerHTML = "";
+  SECS.forEach(function(s){
+    const active = s.id === currentSec;
+    const btn = h("button",{"class":"tab-btn"+(active?" active":""),"style":active?"border-color:"+COLORS[s.id]+";background:"+COLORS[s.id]+"30;color:"+COLORS[s.id]:"","onclick":function(){ currentSec=s.id; renderCurrentSection(); renderTabs(); }},s.label);
+    tabs.appendChild(btn);
+  });
+  const header = document.getElementById("assess-header");
+  header.style.background = BG[currentSec];
+  header.style.borderBottom = "1px solid "+BORDER[currentSec]+"50";
+}
+
+function renderCurrentSection() {
+  refreshSection();
+  refreshSummary();
+  document.getElementById("assess-aq").textContent = getScores(currentSess).aq;
+}
+
+// ==================== INIT ====================
+renderPatients();
+</script>
+
+  <!-- GLOBAL CREDIT FOOTER -->
+  <div id="global-credit" style="position:fixed;bottom:0;left:0;right:0;padding:5px 18px;border-top:1px solid #ffffff06;display:flex;align-items:center;justify-content:center;gap:6px;background:#0a0a14;z-index:50;">
+    <span style="font-size:9px;color:#2d6a4f;">♥</span>
+    <span style="font-size:9px;color:#2a3d30;">Created by</span>
+    <span style="font-size:10px;color:#3d7a5a;font-weight:700;letter-spacing:0.2px;">Mutita Suwannang</span>
+    <span style="width:2px;height:2px;border-radius:50%;background:#2a3d30;display:inline-block;"></span>
+    <span style="font-size:9px;color:#253029;">Speech-Language Pathologist</span>
+  </div>
+</body>
+</html>
